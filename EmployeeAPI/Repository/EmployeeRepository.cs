@@ -17,18 +17,20 @@ namespace EmployeeAPI.Repository
         public async Task<List<object>> GetEmployeeDetails()
         {
             var result = await (from emp in _context.Employees
-                               join dept in _context.Departments on emp.DepartmentID equals dept.DepartmentID
-                               join proj in _context.Projects on emp.DepartmentID equals proj.DepartmentID
-                               select new 
-                               {
-                                   emp.FirstName,
-                                   emp.LastName,
-                                   emp.Gender,
-                                   emp.Email,
-                                   emp.JobTitle,
-                                   DepartmentName = dept.Name ,
-                                   proj.ProjectName
-                               }).ToListAsync<object>();
+                                join dept in _context.Departments on emp.DepartmentID equals dept.DepartmentID into deptGroup
+                                from dept in deptGroup.DefaultIfEmpty()
+                                join proj in _context.Projects on emp.DepartmentID equals proj.DepartmentID into projGroup
+                                from proj in projGroup.DefaultIfEmpty()
+                                select new
+                                {
+                                    emp.FirstName,
+                                    emp.LastName,
+                                    emp.Gender,
+                                    emp.Email,
+                                    emp.JobTitle,
+                                    DepartmentName = dept != null ? dept.Name : null,
+                                    ProjectName = proj != null ? proj.ProjectName : null
+                                }).ToListAsync<object>();
             return result;
         }
 
