@@ -29,3 +29,8 @@ pnpm-debug.log*
 "*.suo" 
 "bin/" 
 "obj/" 
+# Ignore Visual Studio files
+.vs/
+*.suo
+bin/
+obj/
